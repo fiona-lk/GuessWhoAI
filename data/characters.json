@@ -19,7 +19,7 @@
     "eyes": "brown",
     "hair": "black",
     "beard": false,
-    "moustache": false,
+    "moustache": true,
     "nose": "small",
     "glasses": false,
     "hat": false,
@@ -56,12 +56,12 @@
     "filename": "bernard.png",
     "gender": "male",
     "eyes": "brown",
-    "hair": "dark brown",
+    "hair": "brown",
     "beard": false,
     "moustache": false,
     "nose": "large",
-    "glasses": true,
-    "hat": false,
+    "glasses": false,
+    "hat": true,
     "thick_eyebrows": false
   },
   {
@@ -75,7 +75,7 @@
     "nose": "small",
     "glasses": false,
     "hat": false,
-    "thick_eyebrows": true
+    "thick_eyebrows": false
   },
   {
     "name": "Charles",
@@ -100,7 +100,7 @@
     "moustache": false,
     "nose": "small",
     "glasses": true,
-    "hat": false,
+    "hat": true,
     "thick_eyebrows": false
   },
   {
@@ -125,7 +125,7 @@
     "beard": false,
     "moustache": false,
     "nose": "small",
-    "glasses": true,
+    "glasses": false,
     "hat": false,
     "thick_eyebrows": false
   },
@@ -151,8 +151,8 @@
     "beard": false,
     "moustache": false,
     "nose": "small",
-    "glasses": true,
-    "hat": false,
+    "glasses": false,
+    "hat": true,
     "thick_eyebrows": false
   },
   {
@@ -176,8 +176,8 @@
     "hair": "blonde",
     "beard": false,
     "moustache": false,
-    "nose": "large",
-    "glasses": false,
+    "nose": "small",
+    "glasses": true,
     "hat": false,
     "thick_eyebrows": false
   },
@@ -186,7 +186,7 @@
     "filename": "maria.png",
     "gender": "female",
     "eyes": "brown",
-    "hair": "dark brown",
+    "hair": "brown",
     "beard": false,
     "moustache": false,
     "nose": "small",
@@ -199,7 +199,7 @@
     "filename": "max.png",
     "gender": "male",
     "eyes": "brown",
-    "hair": "dark brown",
+    "hair": "black",
     "beard": false,
     "moustache": true,
     "nose": "large",
@@ -251,9 +251,9 @@
     "filename": "richard.png",
     "gender": "male",
     "eyes": "brown",
-    "hair": "dark brown",
+    "hair": "brown",
     "beard": true,
-    "moustache": false,
+    "moustache": true,
     "nose": "small",
     "glasses": false,
     "hat": false,
@@ -264,7 +264,7 @@
     "filename": "robert.png",
     "gender": "male",
     "eyes": "blue",
-    "hair": "dark brown",
+    "hair": "brown",
     "beard": false,
     "moustache": false,
     "nose": "large",
@@ -306,9 +306,9 @@
     "hair": "black",
     "beard": false,
     "moustache": false,
-    "nose": "large",
+    "nose": "small",
     "glasses": false,
-    "hat": true,
+    "hat": false,
     "thick_eyebrows": false
   }
 ]
