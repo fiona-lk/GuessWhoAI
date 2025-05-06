@@ -46,16 +46,15 @@ class DecisionTreeAI:
     def _parse_split_line(self, line):
         """
         Parses the first line of the decision tree to extract (trait, value).
-        Expected format: "|--- trait=value <= 0.50"
         """
         try:
             line = line.strip()
             if "<=" in line:
-                feature_expr = line.split("<= ")[0]  # e.g., "nose=small"
+                feature_expr = line.split("<= ")[0] 
                 parts = feature_expr.split()
                 if not parts:
                     return None
-                feature = parts[-1]  # last token: nose=small
+                feature = parts[-1] 
                 if "=" in feature:
                     trait, value = feature.split("=")
                     value = self._coerce_value(value)
@@ -67,7 +66,7 @@ class DecisionTreeAI:
 
     def _coerce_value(self, val):
         """
-        Converts string value into appropriate type: bool, int, or str.
+        Converts string value into appropriate type
         """
         if val.lower() == "true":
             return True
@@ -79,7 +78,7 @@ class DecisionTreeAI:
 
     def guess_character(self, remaining_characters):
         """
-        If one character remains, return its name. Otherwise, return None.
+        Guesses solution when one option is remaining
         """
         if len(remaining_characters) == 1:
             return remaining_characters[0].name

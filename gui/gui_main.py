@@ -105,10 +105,11 @@ class GuessWhoGUI:
 
     def handle_player_select(self, character):
         self.player_character = character
+        
 
-        # Disable all character buttons
-        for btn in self.button_map.values():
-            btn.config(state="disabled")
+        for name, btn in self.button_map.items():
+            btn.config(command=lambda: None)
+
 
         # Disable game mode switching
         for child in self.mode_frame.winfo_children():
@@ -186,9 +187,6 @@ class GuessWhoGUI:
     def handle_player_question(self, trait, value):
         # Evaluate the trait against the AI's chosen secret character
         correct = self.ai_secret_character.get_trait(trait) == value
-
-        self.remaining_characters = self.characters.copy()
-        self.engine.remaining_characters = self.characters.copy()
 
 
         # Update remaining characters
