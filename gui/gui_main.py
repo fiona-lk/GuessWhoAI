@@ -141,7 +141,12 @@ class GuessWhoGUI:
             trait, value = question
             self.current_trait = trait
             self.current_value = value
-            self.question_label.config(text=f"Does your character have {trait} = {value}?")
+            if value is True:
+                self.question_label.config(text=f'Does your character have {trait}')
+            elif value is False:
+                self.question_label.config(text=f'Does your character not have {trait}')
+            else:
+                self.question_label.config(text=f"Does your character have {trait} = {value}?")
         else:
             guess = self.ai.guess_character(self.remaining_characters)
             if guess == self.player_character.name:
@@ -155,9 +160,16 @@ class GuessWhoGUI:
 
     def handle_response(self, user_said_yes):
         if hasattr(self, "current_trait"):
+            def coerce(val):
+                if isinstance(self.current_value, bool):
+                    if isinstance(val, str):
+                        return val.lower() == "true"
+                    return bool(val)
+                return val
+
             self.remaining_characters = self.engine.remaining_characters = [
                 c for c in self.remaining_characters
-                if (c.get_trait(self.current_trait) == self.current_value) == user_said_yes
+                if (coerce(c.get_trait(self.current_trait)) == self.current_value) == user_said_yes
             ]
 
             for c in self.characters:

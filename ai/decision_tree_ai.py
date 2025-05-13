@@ -15,33 +15,63 @@ class DecisionTreeAI:
         self.X = self.vectorizer.fit_transform(self.X_raw)
         self.classifier = DecisionTreeClassifier(criterion="entropy")
         self.classifier.fit(self.X, self.y)
+        
+        
+        #self.print_tree()
+        
+        
+    def print_tree(self):
+        '''
+        Prints the trained decision tree to the terminal as text.
+        '''
+        feature_names = self.vectorizer.get_feature_names_out()
+        tree_text = export_text(self.classifier, feature_names=list(feature_names))
+        print(tree_text)
+        
+        
 
     def recommend_question(self, remaining_characters):
         """
-        Recommends the next best question (trait=value) to ask based on the current
-        remaining characters. Returns a tuple like ("hair", "blonde").
+        Recommends the next best question (trait, value) to ask using the decision tree.
+        Returns a tuple like ("hair", "blonde").
         """
-        best_trait = None
-        best_value = None
-        min_diff = float('inf')
+        if not remaining_characters:
+            return None
 
-        traits = ["gender", "eyes", "hair", "beard", "moustache", "nose", "glasses", "hat", "thick_eyebrows"]
+        # Transform remaining characters into feature vectors
+        X_remain = self.vectorizer.transform([c.get_all_traits() for c in remaining_characters])
+        tree = self.classifier.tree_
+        feature_names = self.vectorizer.get_feature_names_out()
 
+        # Start at the root node
+        node = 0
+        while tree.feature[node] != -2:  # -2 means it's a leaf node
+            feature_idx = tree.feature[node]
+            threshold = tree.threshold[node]
+            feature_name = feature_names[feature_idx]
 
-        for trait in traits:
-            values = set(c.get_trait(trait) for c in remaining_characters)
-            for value in values:
-                yes_group = [c for c in remaining_characters if c.get_trait(trait) == value]
-                no_group = [c for c in remaining_characters if c.get_trait(trait) != value]
-                diff = abs(len(yes_group) - len(no_group))
+            # Check how remaining characters split at this node
+            left_indices = X_remain[:, feature_idx] <= threshold
+            right_indices = X_remain[:, feature_idx] > threshold
 
-                if 0 < len(yes_group) < len(remaining_characters) and diff < min_diff:
-                    best_trait = trait
-                    best_value = value
-                    min_diff = diff
-
-        return (best_trait, best_value) if best_trait else None
-
+            # If all remaining characters go to one side, continue down that branch
+            if left_indices.all():
+                node = tree.children_left[node]
+            elif right_indices.all():
+                node = tree.children_right[node]
+            else:
+                # This is the best split for the current group
+                # For categorical features, threshold is usually 0.5 (one-hot encoded)
+                # Find the value that splits the group
+                # For one-hot, feature_name will be like "hair=blonde"
+                if "=" in feature_name:
+                    trait, value = feature_name.split("=")
+                    print(trait, value)
+                    return (trait, value)
+                else:
+                    # print(feature_name, threshold)
+                    return (feature_name, False)
+        return None
 
     def _parse_split_line(self, line):
         """

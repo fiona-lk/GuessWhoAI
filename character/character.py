@@ -24,7 +24,8 @@ class Character:
             "moustache": self.moustache,
             "nose": self.nose,
             "glasses": self.glasses,
-            "hat": self.hat
+            "hat": self.hat,
+            "thick_eyebrows": self.thick_eyebrows
         }
 
     def matches(self, trait_name, value):
