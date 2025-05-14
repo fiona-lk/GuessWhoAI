@@ -25,7 +25,7 @@ class GuessWhoGUI:
         self.images = {}
         self.button_map = {}
 
-        self.mode = tk.StringVar(value=self.MODE_AI_GUESSES)
+        self.mode = tk.StringVar(value=self.MODE_TWOSIDED)
 
         self.create_widgets()
             
@@ -36,7 +36,7 @@ class GuessWhoGUI:
 
         tk.Radiobutton(self.mode_frame, text="AI guesses your character", variable=self.mode, value=self.MODE_AI_GUESSES).pack(anchor="w")
         tk.Radiobutton(self.mode_frame, text="You guess AI's character", variable=self.mode, value=self.MODE_PLAYER_GUESSES).pack(anchor="w")
-        tk.Radiobutton(self.mode_frame, text="Two-sided (coming soon)", variable=self.mode, value=self.MODE_TWOSIDED, state="disabled").pack(anchor="w")
+        tk.Radiobutton(self.mode_frame, text="Two-sided", variable=self.mode, value=self.MODE_TWOSIDED).pack(anchor="w")
 
         # --- Character Selection Grid ---
         self.char_frame = tk.LabelFrame(self.root, text="Choose Your Character")
@@ -59,9 +59,17 @@ class GuessWhoGUI:
             btn.grid(row=row, column=col, padx=5, pady=5)
             self.button_map[character.name] = btn
 
-        # --- Question Label ---
+
+        # --- Guess Button ---
+        self.guess_button = tk.Button(self.root, text="Guess AI's Character", command=self.show_guess_menu, state="disabled")
+        self.guess_button.pack(pady=5)
+        # --- Question / Resposne Label ---
+        self.answer_label = tk.Label(self.root, text="")
+        self.answer_label.pack(pady=10)
+        
         self.question_label = tk.Label(self.root, text="Select your character to begin.")
         self.question_label.pack(pady=10)
+        
 
         # --- Response Buttons (for AI guessing mode only) ---
         self.response_frame = tk.Frame(self.root)
@@ -87,9 +95,6 @@ class GuessWhoGUI:
         # Bind resizing
         self.player_question_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        # --- Guess Button ---
-        self.guess_button = tk.Button(self.root, text="Guess AI's Character", command=self.show_guess_menu, state="disabled")
-        self.guess_button.pack(pady=5)
 
 
     def load_image(self, filename):
@@ -133,7 +138,11 @@ class GuessWhoGUI:
             # Player-asks-AI UI will go here soon
 
         elif selected_mode == self.MODE_TWOSIDED:
-            self.question_label.config(text="Two-sided mode coming soon!")
+            self.guess_button.config(state="normal")
+            self.ai_secret_character = random.choice(self.characters)
+            self.remaining_characters = self.characters.copy()
+            self.question_label.config(text="Ask a question...")
+            self.show_player_question_buttons()
 
     def ask_next_question(self):
         question = self.ai.recommend_question(self.remaining_characters)
@@ -147,16 +156,23 @@ class GuessWhoGUI:
                 self.question_label.config(text=f'Does your character not have {trait}')
             else:
                 self.question_label.config(text=f"Does your character have {trait} = {value}?")
+            self.yes_button.config(state="normal")
+            self.no_button.config(state="normal")
+
         else:
             guess = self.ai.guess_character(self.remaining_characters)
             if guess == self.player_character.name:
                 self.question_label.config(text=f"AI wins! It guessed your character: {guess} 🎯")
             elif guess is not None:
                 self.question_label.config(text=f"AI guessed wrong! It guessed {guess}. ❌")
+                self.yes_button.config(state="disabled")
+                self.no_button.config(state="disabled")
             else:
                 self.question_label.config(text="AI is still unsure who your character is.")
-            self.yes_button.config(state="disabled")
-            self.no_button.config(state="disabled")
+            self.yes_button.destroy()
+            self.no_button.destroy()
+            for widget in self.player_question_frame.winfo_children():
+                    widget.destroy()
 
     def handle_response(self, user_said_yes):
         if hasattr(self, "current_trait"):
@@ -175,7 +191,21 @@ class GuessWhoGUI:
             for c in self.characters:
                 if c.name in self.button_map and c not in self.remaining_characters:
                     self.button_map[c.name].config(state="disabled")
-            self.ask_next_question()
+            
+            # two sided or one sided
+            if self.mode.get() == self.MODE_TWOSIDED:
+                # disable answer question buttons
+                self.yes_button.config(state="disabled")
+                self.no_button.config(state="disabled")
+                # delete ask question buttons
+                for widget in self.player_question_frame.winfo_children():
+                    widget.destroy()
+                # ask next questionπ
+                self.question_label.config(text=f"Ask a question")
+                self.show_player_question_buttons()
+            else:
+                # one sided
+                self.ask_next_question()
 
     def show_player_question_buttons(self):
         # Clear previous buttons
@@ -212,10 +242,23 @@ class GuessWhoGUI:
             if c.name in self.button_map and c not in self.remaining_characters:
                 self.button_map[c.name].config(state="disabled")
 
-        # Show feedback
-        self.question_label.config(
-            text=f"AI says: {'Yes ✅' if correct else 'No ❌'} to {trait} = {value}"
-        )
+        
+        if self.mode.get() == self.MODE_TWOSIDED:
+            self.answer_label.config(
+                text=f"AI says: {'Yes ✅' if correct else 'No ❌'} to {trait} = {value}"
+            )
+            # delete ask question buttons
+            for widget in self.player_question_frame.winfo_children():
+                widget.destroy()
+            # ask next question
+            self.ask_next_question()
+            # enable answer question buttons
+            self.yes_button.config(state="normal")
+            self.no_button.config(state="normal")
+        else:
+            self.question_label.config(
+                text=f"AI says: {'Yes ✅' if correct else 'No ❌'} to {trait} = {value}"
+            )
 
     def show_guess_menu(self):
         guess_window = tk.Toplevel(self.root)
@@ -235,7 +278,10 @@ class GuessWhoGUI:
             self.question_label.config(text=f"You guessed {character.name}. Correct! 🎉 You win!")
         else:
             self.question_label.config(text=f"You guessed {character.name}. Incorrect ❌ AI's character was {self.ai_secret_character.name}.")
-
+            
+        self.yes_button.config(state='disabled')
+        self.no_button.config(state='disabled')
+        
         # Lock out further input
         for btn in self.player_question_frame.winfo_children():
             btn.config(state="disabled")
