@@ -6,12 +6,14 @@ from character.character_loader import load_characters
 from ai.decision_tree_ai import DecisionTreeAI
 from game.game_engine import GameEngine
 
+global tree
+
 class GuessWhoGUI:
     MODE_AI_GUESSES = "ai_guesses"
     MODE_PLAYER_GUESSES = "player_guesses"
     MODE_TWOSIDED = "twosided"
 
-    def __init__(self, root):
+    def __init__(self, root, tree):
         self.root = root
         self.root.title("Guess Who AI")
 
@@ -28,6 +30,9 @@ class GuessWhoGUI:
         self.mode = tk.StringVar(value=self.MODE_TWOSIDED)
 
         self.create_widgets()
+        
+        if tree:
+            self.ai.print_tree()
             
     def create_widgets(self):
         # --- Mode Selection ---
