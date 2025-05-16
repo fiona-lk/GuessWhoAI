@@ -36,4 +36,41 @@ python3 main.py
 
 ---
 
+
+## Description of Modules
+
+### AI
+> Holds the code for the DecisionTreeClassifier implementation.
+
+- Implemented as a class
+- Generates the tree
+- Recomends the next most efficient question
+- Has a few additional functions for parsing
+
+
+### Character
+> A simple module for importing each json object as a python object
+
+- Lists the traits of each character
+- exports as a json object
+- exports character portrait filename
+
+### Data
+> Holds the character portraits and all the character json objects
+
+
+### Game
+> Holds a few simple functions for handling the game
+
+
+### GUI
+> Most of the codebase. Holds all GUI generation and the logic / rules for the game.
+
+- GUI initalization
+- Handles 3 modes of play (Bot only, Human only, Human vs Bot)
+- Shows the portrait of each character as a button
+- Handles yes / no responses
+- Passes on question to DecisionTreeClassifier 
+- Winner / looser  logic
+
 Have fun playing Guess Who AI! 🎉🧑‍💻
